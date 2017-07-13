@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class poopbullet : MonoBehaviour {
     public float bulletSpeed = 5f;
+    public float damage = 1f;
 	// Use this for initialization
 	void Start () {
-		
 	}
 	
 	// Update is called once per frame

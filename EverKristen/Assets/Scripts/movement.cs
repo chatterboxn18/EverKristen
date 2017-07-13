@@ -36,9 +36,16 @@ public class movement : MonoBehaviour {
             timer = 0;
         }
         timer++;
-        Debug.Log(timer);
+       
         
         
 	}
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "enemy")
+        {
+            Debug.Log("GameOver");
+        }
+    }
 }
