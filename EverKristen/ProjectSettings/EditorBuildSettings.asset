@@ -4,4 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/startGame.unity
+    guid: fd54bd79a558e884da1220695a4e6d09
+  - enabled: 1
+    path: Assets/Scenes/everKristen.unity
+    guid: d93f76f8cfba4064a8fb0e049ebf1d82
