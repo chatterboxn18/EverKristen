@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class enemyMovement : MonoBehaviour {
     //private GameObject score;
-    public GameObject boba; 
+    public GameObject boba, sushi, iceCream;
+    public Sprite shotFace;
     public float speed = 7f;
     public float life = 2f;
     public int points = 100;
@@ -18,16 +19,16 @@ public class enemyMovement : MonoBehaviour {
         this.transform.Translate(new Vector2(0, -speed * Time.deltaTime));
 	}
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.tag == "bullet")
         {
             this.life = this.life - collision.transform.GetComponent<poopbullet>().damage;
+            this.GetComponent<SpriteRenderer>().sprite = shotFace;
             if (this.life <= 0)
             {
-               // score.GetComponent<gameControl>().score += this.points;
-                GameObject bobas = (GameObject)Instantiate(boba, this.transform.position, Quaternion.identity);
-                bobas.GetComponent<Rigidbody2D>().AddForce(transform.up * 2f, ForceMode2D.Impulse);
+                // score.GetComponent<gameControl>().score += this.points;
+                produceItem();
                 Destroy(this.gameObject);
             }
         }
@@ -36,6 +37,27 @@ public class enemyMovement : MonoBehaviour {
             Destroy(this.gameObject);
         }
         
+    }
+
+    public void produceItem()
+    {
+        int number = Random.Range(0, 50);
+        if (number == 30)
+        {
+            GameObject coins = (GameObject)Instantiate(sushi, this.transform.position, Quaternion.identity);
+            coins.GetComponent<Rigidbody2D>().AddForce(transform.up * 2f, ForceMode2D.Impulse);
+        }
+        else if (number == 20)
+        {
+            GameObject iceCreams = (GameObject)Instantiate(iceCream, this.transform.position, Quaternion.identity);
+            iceCreams.GetComponent<Rigidbody2D>().AddForce(transform.up * 2f, ForceMode2D.Impulse);
+        }
+        else
+        {
+            Debug.Log("I came from" + this.gameObject.name);
+            GameObject bobas = (GameObject)Instantiate(boba, this.transform.position, Quaternion.identity);
+            bobas.GetComponent<Rigidbody2D>().AddForce(transform.up * 2f, ForceMode2D.Impulse);
+        }
     }
 
 

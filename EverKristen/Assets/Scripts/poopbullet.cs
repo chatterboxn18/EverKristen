@@ -14,13 +14,11 @@ public class poopbullet : MonoBehaviour {
         this.transform.Translate(new Vector2(0, bulletSpeed * Time.deltaTime));
 	}
 
-   
-    void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.transform.tag != "bullet")
+        if (collision.transform.tag == "enemy" || collision.transform.tag == "Finish")
         {
             Destroy(this.gameObject);
         }
-        
     }
 }

@@ -16,7 +16,22 @@ public class coins : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.transform.tag == "Finish")
+        if (this.name.Contains("iceCream"))
+        {
+            if (collider.transform.tag == "player")
+            {
+                collider.GetComponent<movement>().level++;
+            }
+        }
+        else if (this.name.Contains("sushi"))
+        {
+            if (collider.transform.tag == "player")
+            {
+                collider.transform.GetComponent<movement>().BlastOff();
+                //collider.GetComponent<movement>();
+            }
+        }
+        if (collider.transform.name == "destroyLeftovers")
         {
             Destroy(this.gameObject);
         }

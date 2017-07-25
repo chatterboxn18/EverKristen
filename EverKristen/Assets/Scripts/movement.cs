@@ -4,25 +4,38 @@ using UnityEngine;
 
 public class movement : MonoBehaviour {
 
-    //private bool hitRightWall = false;
-    //private bool hitLeftWall = false;
-    // Use this for initialization
-    private GameObject scorePanel;
-    public GameObject poop;
+    
+    private GameObject scorePanel, gameOver, background;
     private int timer = 0;
-    //private Vector3 originalMousePosition;
-    private float offsetX;
-    public float movementSpeed = 5;
+    private bool isDragged = false, reseting = false;
     private GameObject edgeLeft, edgeRight;
+    
+    private int resetTime = 0;
+    private int blastLinesMax = 0;
+
+    /*
+     * Public Items below
+     *  
+     * */
     public Vector3 screenPoint, offset;
-    private bool isDragged = false;
+    public int level = 1;
+    public float movementSpeed = 5, bulletSpeed = 5;
+    public int rushMax = 50;
+    public GameObject playerBullets;
+    public bool isBlasted = false;
+    public Animator blastingImage;
+
     void Awake()
     {
+        gameOver = GameObject.Find("gameOver");
+        gameOver.gameObject.SetActive(false);
         scorePanel = GameObject.Find("Game Control");
         edgeLeft = GameObject.Find("Edge1");
         edgeRight = GameObject.Find("Edge2");
+        background = GameObject.Find("Quad");
     }
 	void Start () {
+        
 		
 	}
 	
@@ -30,22 +43,20 @@ public class movement : MonoBehaviour {
 	void FixedUpdate () {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("this went first");
-            offsetX = this.transform.position.x - Input.mousePosition.x;
+
+            
             Debug.Log(Input.mousePosition.x);
             isDragged = true;
-            
+            offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
         }
         if (isDragged == true)
         {
-            Debug.Log("Then a lot of this");
-            Debug.Log(offsetX);
-            //float lagged = offsetX / 5f;
-            if (!(offsetX + Input.mousePosition.x <= edgeLeft.transform.position.x) && !(offsetX + Input.mousePosition.x >= edgeRight.transform.position.x))
+
+            if (!(offset.x + Camera.main.ScreenToWorldPoint(Input.mousePosition).x <= edgeLeft.transform.position.x) && !(offset.x + Camera.main.ScreenToWorldPoint(Input.mousePosition).x >= edgeRight.transform.position.x))
             {
-                this.transform.position = new Vector3(offsetX + Input.mousePosition.x, this.transform.position.y, this.transform.position.z);
+                this.transform.position = new Vector3(offset.x + Camera.main.ScreenToWorldPoint(Input.mousePosition).x, this.transform.position.y, this.transform.position.z);
             }
-           
+
         }
         if (Input.GetMouseButtonUp(0))
         {
@@ -65,24 +76,52 @@ public class movement : MonoBehaviour {
             }
             
         }*/
-        if (timer == 20)
+        if (timer >= bulletSpeed)
         {
-            GameObject bullets = (GameObject)Instantiate(poop, new Vector3(0, 10f, 0) + this.transform.position, Quaternion.identity);
+            
+            if (!isBlasted && !reseting)
+            {
+                GameObject bullets = (GameObject)Instantiate(playerBullets.transform.GetChild(level - 1).gameObject, new Vector3(0, 7f, 0) + this.transform.position, Quaternion.identity);
+            }
             timer = 0;
         }
-        timer++;
+
+        /*BlastOffTimer will update every frame to send this character flying through the air and invulnerable to enemies*/
+        if (this.isBlasted)
+        {
+            this.timer = this.timer + 2;
+            Debug.Log(this.scorePanel.GetComponent<gameControl>().spawnedLines + " " + this.blastLinesMax);
+            
+            if (this.blastLinesMax == this.scorePanel.GetComponent<gameControl>().spawnedLines)
+            {
+                Debug.Log("does this happen");
+                BlastOn();
+            }
+
+        }
+        else
+        {
+           if (reseting)
+            {
+                if (resetTime >= 100)
+                {
+                    this.resetTime = 0;
+                    this.reseting = false;
+                    this.scorePanel.GetComponent<gameControl>().allowSpawn = true;
+                    this.scorePanel.GetComponent<gameControl>().timeToSpawn = 150;
+                }
+                else
+                {
+                    this.resetTime++;
+                }
+            }
+            timer++;
+        }
        
         
         
 	}
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.transform.tag == "enemy")
-        {
-            Debug.Log("GameOver");
-        }
-    }
     public void OnTriggerEnter2D(Collider2D other)
     {
         if (other.transform.tag == "coins")
@@ -90,6 +129,60 @@ public class movement : MonoBehaviour {
             scorePanel.GetComponent<gameControl>().score += other.transform.GetComponent<coins>().value;
             Destroy(other.gameObject);
         }
+        if (other.transform.tag == "enemy")
+        {
+            if (isBlasted || reseting)
+            {
+                other.GetComponent<enemyMovement>().produceItem();
+                Destroy(other.gameObject);
+            }
+            else
+            {
+                gameOver.gameObject.SetActive(true);
+                this.scorePanel.GetComponent<gameControl>().allowSpawn = false;
+                Destroy(this.gameObject);
+            }
+            
+       
+        }
+    }
+
+    public void BlastOff()
+    {
+        if (!isBlasted)
+        {
+            this.isBlasted = true;
+            this.scorePanel.GetComponent<gameControl>().timeToSpawn = 50;
+            this.blastLinesMax = this.scorePanel.GetComponent<gameControl>().spawnedLines + 7;
+            if (blastLinesMax >= 25)
+            {
+                blastLinesMax = blastLinesMax - 25;
+            }
+            this.background.GetComponent<bgScroll>().scrollSpeed = 0.5f;
+        }
+        else
+        {
+            if(!this.isBlasted) {
+                this.isBlasted = true;
+                this.reseting = false;
+                this.blastLinesMax = 2;
+            }
+            this.blastLinesMax += 2;
+            if (this.blastLinesMax >= 25)
+            {
+                blastLinesMax = blastLinesMax - 25;
+            }
+        }
+        
+    }
+
+    private void BlastOn()
+    {
+        this.background.GetComponent<bgScroll>().scrollSpeed = 0.1f;
+        this.scorePanel.GetComponent<gameControl>().allowSpawn = false;
+        this.isBlasted = false;
+        this.reseting = true;
+        this.blastLinesMax = 0;
     }
     
 }
