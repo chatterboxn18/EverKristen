@@ -1,34 +1,27 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class coins : MonoBehaviour {
     public int value = 0;
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
-		
-	}
+    public Action Evt_PlayerLevelUp = delegate {  };
+    public Action Evt_PlayerSpeedUp = delegate {  };
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (this.name.Contains("iceCream"))
+        if (name.Contains("iceCream"))
         {
             if (collider.transform.tag == "player")
             {
-                collider.GetComponent<movement>().level++;
+                Evt_PlayerLevelUp();
             }
         }
-        else if (this.name.Contains("sushi"))
+        else if (name.Contains("sushi"))
         {
             if (collider.transform.tag == "player")
             {
-                collider.transform.GetComponent<movement>().BlastOff();
-                //collider.GetComponent<movement>();
+                Evt_PlayerSpeedUp();
             }
         }
         if (collider.transform.name == "destroyLeftovers")

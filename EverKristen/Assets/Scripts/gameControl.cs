@@ -1,17 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class gameControl : MonoBehaviour {
-    private GameObject enemy1, enemy2, enemy3, enemy4, enemy5, player;
-    private GameObject scoreText;
+    private GameObject enemy1, enemy2, enemy3, enemy4, enemy5;
+    [SerializeField] private movement player;
+    [SerializeField] private Text scoreText;
     private List<int> enemies;
-    private Dictionary<int, GameObject> enemyDict;
+    private Dictionary<int, EnemyMovement> enemyDict;
     private int timer = 0;
     public int spawnedLines;
-    public GameObject bearEnemy1, bearEnemy2, bearEnemy3, bearEnemy4, bearEnemy5;
-    public GameObject enemy;
+    public EnemyMovement bearEnemy1, bearEnemy2, bearEnemy3, bearEnemy4, bearEnemy5;
+    [SerializeField] private EnemyMovement enemy;
     public int timeToSpawn = 30;
     public int level = 0;
     public bool allowSpawn = true;
@@ -20,14 +22,7 @@ public class gameControl : MonoBehaviour {
 
     void Awake()
     {
-        enemy1 = GameObject.Find("enemy1");
-        enemy2 = GameObject.Find("enemy2");
-        enemy3 = GameObject.Find("enemy3");
-        enemy4 = GameObject.Find("enemy4");
-        enemy5 = GameObject.Find("enemy5");
-        scoreText = GameObject.Find("score");
-        player = GameObject.Find("kristen1");
-        enemyDict = new Dictionary<int, GameObject>();
+        enemyDict = new Dictionary<int, EnemyMovement>();
         enemies = new List<int>();
         enemyDict.Add(1, bearEnemy1);
         enemyDict.Add(2, bearEnemy2);
@@ -51,35 +46,35 @@ public class gameControl : MonoBehaviour {
         {
             
             enemy = enemyDict[enemies[Random.Range(0, (enemies.Count))]];
-            if (player.GetComponent<movement>().isBlasted)
+            if (player.isBlasted)
             {
-                enemy.GetComponent<enemyMovement>().speed = 60;
+                enemy.speed = 60;
             }
-            GameObject firstEnemy = (GameObject)Instantiate(enemy, enemy1.transform.position, Quaternion.identity);
+            var firstEnemy = Instantiate(enemy, new Vector2(-95, 70), Quaternion.identity);
             enemy = enemyDict[enemies[Random.Range(0, (enemies.Count))]];
-            if (player.GetComponent<movement>().isBlasted)
+            if (player.isBlasted)
             {
-                enemy.GetComponent<enemyMovement>().speed = 60;
+                enemy.speed = 60;
             }
-            GameObject secondEnemy = (GameObject)Instantiate(enemy, enemy2.transform.position, Quaternion.identity);
+            var secondEnemy = Instantiate(enemy, new Vector2(-80, 70), Quaternion.identity);
             enemy = enemyDict[enemies[Random.Range(0, (enemies.Count))]];
-            if (player.GetComponent<movement>().isBlasted)
+            if (player.isBlasted)
             {
-                enemy.GetComponent<enemyMovement>().speed = 60;
+                enemy.speed = 60;
             }
-            GameObject thirdEnemy = (GameObject)Instantiate(enemy, enemy3.transform.position, Quaternion.identity);
+            var thirdEnemy = Instantiate(enemy, new Vector2(-65, 70), Quaternion.identity);
             enemy = enemyDict[enemies[Random.Range(0, (enemies.Count))]];
-            if (player.GetComponent<movement>().isBlasted)
+            if (player.isBlasted)
             {
-                enemy.GetComponent<enemyMovement>().speed = 60;
+                enemy.speed = 60;
             }
-            GameObject fourthEnemy = (GameObject)Instantiate(enemy, enemy4.transform.position, Quaternion.identity);
+            var fourthEnemy = Instantiate(enemy, new Vector2(-50, 70), Quaternion.identity);
             enemy = enemyDict[enemies[Random.Range(0, (enemies.Count))]];
-            if (player.GetComponent<movement>().isBlasted)
+            if (player.isBlasted)
             {
-                enemy.GetComponent<enemyMovement>().speed = 60;
+                enemy.speed = 60;
             }
-            GameObject fifthEnemy = (GameObject)Instantiate(enemy, enemy5.transform.position, Quaternion.identity);
+            var fifthEnemy = Instantiate(enemy, new Vector2(-35, 70), Quaternion.identity);
             spawnedLines++;
             timer = 0;
         }
@@ -91,7 +86,7 @@ public class gameControl : MonoBehaviour {
 		
 	}
 
-    void RandomEnemy(GameObject enemy)
+    void RandomEnemy(EnemyMovement enemy)
     {
         int number = enemies[Random.Range(0, (enemies.Count) - 1)];
         enemy = enemyDict[enemies[Random.Range(0, (enemies.Count) - 1)]];
@@ -100,7 +95,7 @@ public class gameControl : MonoBehaviour {
 
     void UpdateScore()
     {
-        scoreText.GetComponent<UnityEngine.UI.Text>().text = score.ToString();
+        scoreText.text = score.ToString();
     }
 
     void NewLevel()

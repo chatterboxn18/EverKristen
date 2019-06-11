@@ -133,7 +133,7 @@ public class movement : MonoBehaviour {
         {
             if (isBlasted || reseting)
             {
-                other.GetComponent<enemyMovement>().produceItem();
+                other.GetComponent<EnemyMovement>().produceItem();
                 Destroy(other.gameObject);
             }
             else
